@@ -1,4 +1,6 @@
-﻿using Common.Library.Kafka.Common.Configuration;
+﻿using System.Text.Json;
+using Common.Library.Kafka.Common.Configuration;
+using Common.Library.Kafka.Common.Extensions;
 using Common.Library.Kafka.Consumer.Interfaces;
 using Common.Library.Kafka.Consumer.Services;
 using Confluent.Kafka;
@@ -9,9 +11,13 @@ namespace Common.Library.Kafka.Consumer.Extensions;
 
 public static class ServiceCollectionExtensions
 {
-    public static IServiceCollection AddConsumerHandler<TValueType, THandlerType>(this IServiceCollection services)
+    public static IServiceCollection AddConsumerHandler<TValueType, THandlerType>(
+        this IServiceCollection services,
+        JsonSerializerOptions? serializerOptions = null)
         where THandlerType : class, IConsumerHandler<TValueType>
     {
+        services.AddJsonDeserializer<TValueType>(serializerOptions);
+        
         services.AddSingleton<IConsumer<string, TValueType>>(provider =>
             {
                 var kafkaOptions = provider.GetRequiredService<IOptionsSnapshot<CommonKafkaOptions>>().Value;
@@ -26,7 +32,11 @@ public static class ServiceCollectionExtensions
                     EnableAutoOffsetStore = consumerOptions.EnableAutoOffsetStore
                 };
 
-                return new ConsumerBuilder<string, TValueType>(consumerConfig).Build();
+                var deserializer = provider.GetRequiredService<IDeserializer<TValueType>>();
+
+                return new ConsumerBuilder<string, TValueType>(consumerConfig)
+                    .SetValueDeserializer(deserializer)
+                    .Build();
             }
         );
 

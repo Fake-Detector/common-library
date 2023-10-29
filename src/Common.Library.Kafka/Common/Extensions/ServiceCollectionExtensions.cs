@@ -45,7 +45,7 @@ public static class ServiceCollectionExtensions
         return services;
     }
 
-    public static IServiceCollection AddCommonKafka(IServiceCollection services, IConfiguration config)
+    public static IServiceCollection AddCommonKafka(this IServiceCollection services, IConfiguration config)
     {
         services.Configure<CommonKafkaOptions>(config.GetSection(nameof(CommonKafkaOptions)));
         
