@@ -29,7 +29,11 @@ internal class ConsumerBackgroundService<T> : BackgroundService
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         _logger.LogInformation("Start consumer handler: {Type} successful", typeof(T).FullName);
-        _consumer.Subscribe(_kafkaOptions.CurrentValue.ConsumerOptions.Topics);
+
+        var topics = _kafkaOptions.CurrentValue.ConsumerOptions.Topics
+            .Split(",", StringSplitOptions.RemoveEmptyEntries).Select(it => it.Trim());
+
+        _consumer.Subscribe(topics);
 
         while (!stoppingToken.IsCancellationRequested)
         {
