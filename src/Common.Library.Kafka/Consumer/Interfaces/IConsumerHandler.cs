@@ -2,7 +2,7 @@
 
 namespace Common.Library.Kafka.Consumer.Interfaces;
 
-public interface IConsumerHandler<T> : IDisposable
+public interface IConsumerHandler<T>
 {
     public Task HandleMessage(ConsumeResult<string, T> message, CancellationToken cancellationToken);
 }

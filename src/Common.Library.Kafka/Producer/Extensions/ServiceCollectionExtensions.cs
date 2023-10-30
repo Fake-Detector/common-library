@@ -1,8 +1,6 @@
 ﻿using System.Text.Json;
-using System.Text.Json.Serialization;
 using Common.Library.Kafka.Common.Configuration;
 using Common.Library.Kafka.Common.Extensions;
-using Common.Library.Kafka.Common.JsonSerializers;
 using Common.Library.Kafka.Producer.Interfaces;
 using Confluent.Kafka;
 using Microsoft.Extensions.DependencyInjection;
@@ -20,7 +18,7 @@ public static class ServiceCollectionExtensions
         
         services.AddSingleton<IProducer<string, T>>(provider =>
         {
-            var kafkaOptions = provider.GetRequiredService<IOptionsSnapshot<CommonKafkaOptions>>().Value;
+            var kafkaOptions = provider.GetRequiredService<IOptionsMonitor<CommonKafkaOptions>>().CurrentValue;
 
             var producerConfig = new ProducerConfig
             {

@@ -20,7 +20,7 @@ public static class ServiceCollectionExtensions
         
         services.AddSingleton<IConsumer<string, TValueType>>(provider =>
             {
-                var kafkaOptions = provider.GetRequiredService<IOptionsSnapshot<CommonKafkaOptions>>().Value;
+                var kafkaOptions = provider.GetRequiredService<IOptionsMonitor<CommonKafkaOptions>>().CurrentValue;
                 var consumerOptions = kafkaOptions.ConsumerOptions;
 
                 var consumerConfig = new ConsumerConfig
