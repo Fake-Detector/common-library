@@ -1,13 +1,13 @@
-﻿using System.Text.Json;
-using Confluent.Kafka;
+﻿using Confluent.Kafka;
+using Newtonsoft.Json;
 
 namespace Common.Library.Kafka.Common.JsonDeserializers;
 
 internal sealed class JsonValueDeserializer<T> : IDeserializer<T>
 {
-    private readonly JsonSerializerOptions _serializerOptions;
+    private readonly JsonSerializerSettings _serializerOptions;
 
-    public JsonValueDeserializer(JsonSerializerOptions jsonSerializerOptions)
+    public JsonValueDeserializer(JsonSerializerSettings jsonSerializerOptions)
     {
         _serializerOptions = jsonSerializerOptions;
     }
@@ -16,9 +16,11 @@ internal sealed class JsonValueDeserializer<T> : IDeserializer<T>
     {
         if (isNull)
             throw new ArgumentNullException(nameof(data), "Null data encountered");
-        
-        var resultDeserialized = JsonSerializer.Deserialize<T>(data, _serializerOptions);
-        
+
+        var resultDeserialized = JsonConvert.DeserializeObject<T>(
+            Deserializers.Utf8.Deserialize(data, false, SerializationContext.Empty),
+            _serializerOptions);
+
         if (resultDeserialized == null)
             throw new ConsumeException(new ConsumeResult<byte[], byte[]>
             {
