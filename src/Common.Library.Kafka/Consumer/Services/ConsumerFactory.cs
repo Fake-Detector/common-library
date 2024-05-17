@@ -20,6 +20,7 @@ internal class ConsumerFactory : IConsumerFactory
             {
                 BootstrapServers = _kafkaOptions.CurrentValue.BrokerHost,
                 GroupId = consumerOptions.GroupId,
+                MaxPollIntervalMs = consumerOptions.MaxPollIntervalMs,
                 AutoOffsetReset = consumerOptions.AutoOffsetReset,
                 EnableAutoCommit = consumerOptions.EnableAutoCommit,
                 EnableAutoOffsetStore = consumerOptions.EnableAutoOffsetStore
